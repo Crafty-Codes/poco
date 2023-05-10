@@ -24,6 +24,7 @@ public:
 	CppParserTest(const std::string& name);
 	~CppParserTest();
 
+	void testParseNamespace();
 	void testParseDir();
 	void testExtractName();
 	void testNumberLiterals();

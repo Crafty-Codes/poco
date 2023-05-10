@@ -17,11 +17,21 @@
 #include <sstream>
 #include <iostream>
 
-
 using namespace Poco::CppParser;
 
+#ifdef __linux__
+
+std::string linker("gcc");
+std::string testing_path = std::string(__FILE__).erase(std::string(__FILE__).find_last_of("/"));
+
+#elif _WIN32 // Both 32 bit and 64 bit
 
 std::string linker("cl");
+std::string testing_path = std::string(__FILE__).erase(std::string(__FILE__).find_last_of("\\"));
+
+#endif
+
+
 std::string options("/I \"C:\\Program Files\\Microsoft Visual Studio 8\\VC\\INCLUDE\", "
 				"/I \"C:\\Program Files\\Microsoft Visual Studio 8\\VC\\PlatformSDK\\include\", "
 				"/I \"p:\\poco\\Foundation\\include\", "
@@ -43,6 +53,24 @@ CppParserTest::CppParserTest(const std::string& name): CppUnit::TestCase(name)
 
 CppParserTest::~CppParserTest()
 {
+}
+
+void CppParserTest::testParseNamespace()
+{
+	NameSpace::SymbolTable st;
+
+	Utility::parse(testing_path + "/data/NestedNamespace.h", st, linker, "-E", "");
+
+    auto it = st.begin();
+    const auto itEnd = st.end();
+
+	Symbol* pSym = it->second;
+	if (pSym->kind() == Symbol::SYM_NAMESPACE && !pSym->name().empty()) {
+		auto name = pSym->name();
+		assertEquals(name, "A::B::C::D::E::F");
+	} else {
+		fail("Failed to parse Nested namespace");
+	}
 }
 
 
@@ -193,7 +221,8 @@ void CppParserTest::tearDown()
 CppUnit::Test* CppParserTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("CppParserTest");
-
+	
+	CppUnit_addTest(pSuite, CppParserTest, testParseNamespace);
 	CppUnit_addTest(pSuite, CppParserTest, testParseDir);
 	CppUnit_addTest(pSuite, CppParserTest, testExtractName);
 	CppUnit_addTest(pSuite, CppParserTest, testNumberLiterals);
