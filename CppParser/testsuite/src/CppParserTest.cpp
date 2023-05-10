@@ -23,11 +23,13 @@ using namespace Poco::CppParser;
 
 std::string linker("gcc");
 std::string testing_path = std::string(__FILE__).erase(std::string(__FILE__).find_last_of("/"));
+std::string namespace_test_file = testing_path + "/data/NestedNamespace.h";
 
 #elif _WIN32 // Both 32 bit and 64 bit
 
 std::string linker("cl");
 std::string testing_path = std::string(__FILE__).erase(std::string(__FILE__).find_last_of("\\"));
+std::string namespace_test_file = testing_path + "\\data\\NestedNamespace.h";
 
 #endif
 
@@ -59,7 +61,7 @@ void CppParserTest::testParseNamespace()
 {
 	NameSpace::SymbolTable st;
 
-	Utility::parse(testing_path + "/data/NestedNamespace.h", st, linker, "-E", "");
+	Utility::parse(namespace_test_file, st, linker, "-E,-o,NestedNamespace.i", "");
 
     auto it = st.begin();
     const auto itEnd = st.end();
