@@ -208,11 +208,24 @@ const Token* Parser::parseNameSpace(const Token* pNext)
 	poco_assert (isKeyword(pNext, IdentifierToken::KW_NAMESPACE));
 
 	pNext = next();
+	/* 
+	Nested namespaces will be split into 3 different next() pieces
+	name::space
+	^   ^ ^
+	*/
 	if (pNext->is(Token::IDENTIFIER_TOKEN))
 	{
 		_access = Symbol::ACC_PUBLIC;
 		std::string name = pNext->tokenString();
 		pNext = next();
+		// Check for nested namespace
+		while (isOperator(pNext, OperatorToken::OP_DBL_COLON))
+		{
+			pNext = next(); // Second namespace
+			name += "::" + pNext->tokenString(); // Append namespace to name
+			pNext = next(); 
+		}
+		
 		expectOperator(pNext, OperatorToken::OP_OPENBRACE, "{");
 
 		std::string fullName = currentNameSpace()->fullName();
