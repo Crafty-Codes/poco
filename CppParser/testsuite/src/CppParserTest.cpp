@@ -19,21 +19,21 @@
 
 using namespace Poco::CppParser;
 
-#ifdef __linux__
+#if defined(__linux__)
 
 std::string linker("gcc");
 std::string testing_path(std::string(__FILE__).erase(std::string(__FILE__).find_last_of("/")));
 std::string namespace_test_file(testing_path + "/data/NestedNamespace.h");
 std::string namespace_options("-E,-o,NestedNamespace.i");
 
-#elif __APPLE__
+#elif defined(__APPLE__)
 
 std::string linker("gcc");
 std::string testing_path(std::string(__FILE__).erase(std::string(__FILE__).find_last_of("/")));
 std::string namespace_test_file(testing_path + "/data/NestedNamespace.h");
 std::string namespace_options("-E,-o,NestedNamespace.i");
 
-#elif _WIN32 // Both 32 bit and 64 bit
+#elif defined(_WIN32) // Both 32 bit and 64 bit
 
 std::string linker("cl");
 std::string testing_path = std::string(__FILE__).erase(std::string(__FILE__).find_last_of("\\"));
