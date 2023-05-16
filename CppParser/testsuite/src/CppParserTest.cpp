@@ -19,7 +19,14 @@
 
 using namespace Poco::CppParser;
 
-#ifdef __linux__ || __APPLE__
+#ifdef __linux__
+
+std::string linker("gcc");
+std::string testing_path(std::string(__FILE__).erase(std::string(__FILE__).find_last_of("/")));
+std::string namespace_test_file(testing_path + "/data/NestedNamespace.h");
+std::string namespace_options("-E,-o,NestedNamespace.i");
+
+#elif __APPLE__
 
 std::string linker("gcc");
 std::string testing_path(std::string(__FILE__).erase(std::string(__FILE__).find_last_of("/")));
